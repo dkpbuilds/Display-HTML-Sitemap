@@ -6,7 +6,17 @@
 #dhswp-option-wrapper {
     border: 1px solid #C6C6C6;
     border-radius: 3px;
-    border-radius: 3px;
+}
+
+#dhswp-sortable {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+}
+
+#dhswp-sortable li.dhswp-ui-state-default {
+    list-style: none;
+    margin: 5px 0;
 }
 #dhswp-option-title {
     background-color: #F1F1F1;
@@ -21,17 +31,21 @@
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F9F9F9), to(#ECECEC));
     background-image: -webkit-linear-gradient(top, #F9F9F9, #ECECEC);
     background-image: linear-gradient(top, #F9F9F9, #ECECEC);
+    white-space: nowrap;
 }
 .dhswp-title {
     display: inline-block;
-    padding: 10px 35px;;
+    padding: 10px 15px;
     color: #464646;
     text-shadow: 0 1px 0 #FFFFFF;
+    vertical-align: top;
+    box-sizing: border-box;
 }
-.dhswp-title.dhswp-title4{
-    padding: 10px 170px;
-}
-.dhswp-cpt {} .dhswp-ui-state-default {
+.dhswp-title.dhswp-title1 { width: 120px; }
+.dhswp-title.dhswp-title2 { width: 92px; }
+.dhswp-title.dhswp-title3 { width: 240px; }
+.dhswp-title.dhswp-title4 { width: 186px; }
+.dhswp-cpt .dhswp-ui-state-default {
     border: 1px solid #DFDFDF;
     background-color: #f7f7f7;
     margin: 5px;
@@ -57,14 +71,15 @@
 .dhswp-cpt-name {
     float: left;
     padding: 8px 10px;
-    width: 280px;
-    margin-left: 50px;
+    width: 200px;
+    margin-left: 20px;
     position: relative;
 }
 .dhswp-cpt-slug {
     float: left;
     padding: 6px 18px;
     width: 150px;
+    white-space: nowrap;
 }
 .dhswp-newname {
     background: none repeat scroll 0 0 #EBEBEB;

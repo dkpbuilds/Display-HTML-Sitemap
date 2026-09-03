@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Display HTML Sitemap
-Version: 1.2.0
+Version: 1.2.1
 Description: Display HTML Sitemap generates a clean hierarchical HTML sitemap. Supports Pages, Posts and all Custom Post Types with full admin control.
 Author: Dipak Kumar Pusti
 Author URI: https://profiles.wordpress.org/dkpbuilds/
@@ -336,12 +336,13 @@ final class Display_Html_Sitemap {
 					$array[$key]->dhswp_active = 'no';
 				}
 				
-				// New Name
-				if( get_option( 'dhswp_newname_' . $key ) != '' ) {
-					$array[$key]->newname = get_option( 'dhswp_newname_' . $key );
-				} else {
-					$array[$key]->newname = $array[$key]->label;
-				}
+			// New Name
+			$newname_option = get_option( 'dhswp_newname_' . $key, '' );
+			if ( '' !== $newname_option ) {
+				$array[$key]->newname = $newname_option;
+			} else {
+				$array[$key]->newname = $array[$key]->label;
+			}
 				
 				$ordered[$key] = $array[$key];
 				unset($array[$key]);
@@ -362,12 +363,12 @@ final class Display_Html_Sitemap {
 
 		$atts = shortcode_atts(
 			array(
-				'orderby'        => 'menu_order',
-				'order'          => 'ASC',
-				'posts_per_page' => -1,
-				'number'         => -1,        // alias
-				'exclude'        => '',
-				'hierarchical'   => 1,
+				'orderby'          => 'menu_order',
+				'order'            => 'ASC',
+				'posts_per_page'   => -1,
+				'number'           => -1,        // alias
+				'exclude'          => '',
+				'hierarchical'     => 1,
 			),
 			$atts,
 			'display-html-sitemap'
@@ -376,7 +377,7 @@ final class Display_Html_Sitemap {
 		// Support both 'posts_per_page' and legacy 'number'
 		$posts_per_page = ( -1 !== (int) $atts['posts_per_page'] ) ? (int) $atts['posts_per_page'] : (int) $atts['number'];
 
-		$return = '<div class="dhswp-html-sitemap-wrapper">';
+		$return = '<div class="dhswp-html-sitemap-wrapper">' . "\n";
 
 		// Cache frequently used data
 		$post_types            = $this->dhswp_post_types();
@@ -392,8 +393,9 @@ final class Display_Html_Sitemap {
 			// Ensure new name is always defined
 			$newname = isset( $post_types[ $post_type ] ) ? $post_types[ $post_type ]->labels->name : $post_type;
 
-			if ( get_option( 'dhswp_newname_' . $post_type ) !== '' ) {
-				$newname = get_option( 'dhswp_newname_' . $post_type );
+			$newname_option = get_option( 'dhswp_newname_' . $post_type, '' );
+			if ( '' !== $newname_option ) {
+				$newname = $newname_option;
 			}
 
 			$return .= $this->dhswp_get_post_by_post_type(
@@ -407,7 +409,7 @@ final class Display_Html_Sitemap {
 			);
 		}
 
-		$return .= '</div> <!-- .dhswp-html-sitemap-wrapper -->';
+		$return .= '</div> <!-- .dhswp-html-sitemap-wrapper -->' . "\n";
 
 		return $return;
 	}
@@ -448,7 +450,7 @@ final class Display_Html_Sitemap {
 		wp_reset_postdata();
 
 		$posts = $loop->posts;
-		$return = '<h2 class="dhswp-html-sitemap-post-title dhswp-' . esc_attr( $loop->query_vars['post_type'] ) . '-title">' . esc_html( $title ) . '</h2>';
+		$return = '<h2 class="dhswp-html-sitemap-post-title dhswp-' . esc_attr( $loop->query_vars['post_type'] ) . '-title">' . esc_html( $title ) . '</h2>' . "\n";
 
 		if ( count( $posts ) > 0 ) {
 
@@ -458,10 +460,10 @@ final class Display_Html_Sitemap {
 			$shortcode_ids   = $shortcode_exclude ? array_map( 'absint', explode( ',', $shortcode_exclude ) ) : array();
 			$exclude_ids     = array_unique( array_merge( $global_ids, $shortcode_ids ) );
 
-			$return .= '<ul class="dhswp-html-sitemap-post-list dhswp-' . esc_attr( $loop->query_vars['post_type'] ) . '-list">';
+			$return .= '<ul class="dhswp-html-sitemap-post-list dhswp-' . esc_attr( $loop->query_vars['post_type'] ) . '-list">' . "\n";
 			$parent_id = 0;
 			$return   .= $this->dhswp_get_subpost( $posts, $parent_id, false, $exclude_ids, (bool) $hierarchical );
-			$return   .= '</ul>';
+			$return   .= '</ul>' . "\n";
 		}
 
 		return $return;
@@ -481,23 +483,24 @@ final class Display_Html_Sitemap {
 
 			foreach ( $posts as $post ) {
 
-				if ( (int) $post->post_parent === (int) $parent_id ) {
+				// Flat mode: show all posts. Hierarchical: only children of current parent.
+				if ( ! $hierarchical || (int) $post->post_parent === (int) $parent_id ) {
 
 					if ( ! in_array( (int) $post->ID, $exclude_ids, true ) ) {
 
-						$return .= '<li>';
-						$return .= '<a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . esc_html( $post->post_title ) . '</a>';
+						$return .= '<li>' . "\n";
+						$return .= '<a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . esc_html( $post->post_title ) . '</a>' . "\n";
 
 						if ( $hierarchical ) {
 							$return .= $this->dhswp_get_subpost( $posts, $post->ID, true, $exclude_ids, true );
 						}
-						$return .= '</li>';
+						$return .= '</li>' . "\n";
 					}
 				}
 			}
 
 			if ( '' !== $return && $display_ul ) {
-				$return = '<ul>' . $return . '</ul>';
+				$return = '<ul>' . "\n" . $return . '</ul>' . "\n";
 			}
 		}
 
